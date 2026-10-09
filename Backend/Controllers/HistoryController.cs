@@ -1,22 +1,24 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Backend.Services;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Backend.Controllers
+namespace Ease.Controllers
 {
-    [ApiController]
     [Route("[controller]")]
+    [ApiController]
     public class HistoryController : ControllerBase
     {
+        private readonly IHistoryService _historyService;
 
-        public HistoryController()
+        public HistoryController(IHistoryService historyService)
         {
+            _historyService = historyService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> GetHistory([FromBody] string input)
+        [HttpGet]
+        public async Task<IActionResult> GetHistory()
         {
-            //Handoff to service layer to get history
-            return Ok();
+            var result = await _historyService.GetHistory();
+            return Ok(result);
         }
-
     }
 }

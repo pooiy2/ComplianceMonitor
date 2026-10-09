@@ -17,9 +17,6 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<History> Histories { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("name=ConnectionStrings:DefaultConnection");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -52,6 +49,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Confidence).HasColumnName("confidence");
             entity.Property(e => e.Guideline).HasColumnName("guideline");
             entity.Property(e => e.Timestamp).HasColumnName("timestamp");
+            entity.Property(e => e.Result).HasColumnName("result").HasColumnType("result");
         });
 
         OnModelCreatingPartial(modelBuilder);
