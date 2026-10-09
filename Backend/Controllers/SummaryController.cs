@@ -1,26 +1,24 @@
 ﻿using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
-using Backend.ViewModels;
 
 namespace Backend.Controllers
 {
-    [ApiController]
     [Route("[controller]")]
+    [ApiController]
     public class SummaryController : ControllerBase
     {
-        IHistoryService _historyService;
+        private readonly IHistoryService _historyService;
 
         public SummaryController(IHistoryService historyService)
         {
             _historyService = historyService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> GetSummary([FromBody] string input)
+        [HttpGet]
+        public async Task<IActionResult> GetSummary()
         {
-            SummaryViewModel summary = await _historyService.GetSummary();
-            return Ok(summary);
+            var result = await _historyService.GetSummary();
+            return Ok(result);
         }
-
     }
 }

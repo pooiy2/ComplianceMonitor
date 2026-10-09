@@ -8,7 +8,7 @@ namespace Backend.Controllers
     [Route("[controller]")]
     public class AnalyzeController : ControllerBase
     {
-        IHuggingFaceService _huggingFaceService;
+        private readonly IHuggingFaceService _huggingFaceService;
 
         public AnalyzeController(IHuggingFaceService huggingFaceService)
         {

@@ -1,7 +1,7 @@
 ﻿using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Ease.Controllers
+namespace Backend.Controllers
 {
     [Route("[controller]")]
     [ApiController]
