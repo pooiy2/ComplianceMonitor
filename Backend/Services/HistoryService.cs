@@ -10,7 +10,7 @@ namespace Backend.Services
     public interface IHistoryService
     {
         Task<List<HistoryViewModel>> GetHistory();
-        Task<string> GetSummary();
+        Task<SummaryViewModel> GetSummary();
     }
 
     public class HistoryService : IHistoryService
@@ -35,10 +35,16 @@ namespace Backend.Services
             }).ToList();
         }
 
-        public async Task<string> GetSummary()
+        public async Task<SummaryViewModel> GetSummary()
         {
-            // Implement logic to retrieve summary from the database or any other source
-            return await Task.FromResult("Summary data");
+            List<History> history = await _historyRepository.GetAll();
+            return new SummaryViewModel
+            {
+                Total = history.Count,
+                Complies = history.Count(h => h.Result == Result.COMPLIES),
+                Deviates = history.Count(h => h.Result == Result.DEVIATES),
+                Unclear = history.Count(h => h.Result == Result.UNCLEAR)
+            };
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Backend.Services;
+using Microsoft.AspNetCore.Mvc;
+using Backend.ViewModels;
 
 namespace Backend.Controllers
 {
@@ -6,16 +8,18 @@ namespace Backend.Controllers
     [Route("[controller]")]
     public class SummaryController : ControllerBase
     {
+        IHistoryService _historyService;
 
-        public SummaryController()
+        public SummaryController(IHistoryService historyService)
         {
+            _historyService = historyService;
         }
 
         [HttpPost]
         public async Task<IActionResult> GetSummary([FromBody] string input)
         {
-            //Handoff to histroy service to get summary
-            return Ok();
+            SummaryViewModel summary = await _historyService.GetSummary();
+            return Ok(summary);
         }
 
     }
