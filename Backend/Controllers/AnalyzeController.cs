@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Backend.Services;
+using Backend.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers
 {
@@ -6,16 +8,23 @@ namespace Backend.Controllers
     [Route("[controller]")]
     public class AnalyzeController : ControllerBase
     {
+        IHuggingFaceService _huggingFaceService;
 
-        public AnalyzeController()
+        public AnalyzeController(IHuggingFaceService huggingFaceService)
         {
+            _huggingFaceService = huggingFaceService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Analyze([FromBody] string input)
+        public async Task<IActionResult> Analyze(HuggingFaceRequestViewModel request)
         {
+            if (request == null || string.IsNullOrWhiteSpace(request.Input) || string.IsNullOrWhiteSpace(request.Guideline))
+            {
+                return BadRequest("Invalid request. Please provide both 'Input' and 'Guideline'.");
+            }
+
             //Handoff to service layer to call hugging face
-            return Ok();
+            return Ok(await _huggingFaceService.AnalyzeTextAsync(request));
         }
 
     }
