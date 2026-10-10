@@ -1,7 +1,10 @@
-﻿using System.Text.Json;
-using Backend.ViewModels;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text.Json;
+using Backend.Enums;
+using Backend.Models;
+using Backend.Repository;
+using Backend.ViewModels;
 
 namespace Backend.Services
 {
@@ -15,10 +18,18 @@ namespace Backend.Services
         private const string Endpoint = "https://router.huggingface.co/hf-inference/models/facebook/bart-large-mnli";
 
         private readonly HttpClient _httpClient;
+        private readonly string _bearerToken;
+        private readonly IHistoryRepository _historyRepository;
 
-        public HuggingFaceService(HttpClient httpClient)
+        public HuggingFaceService(HttpClient httpClient, IConfiguration configuration, IHistoryRepository historyRepository)
         {
             _httpClient = httpClient;
+            _bearerToken = configuration["HUGGINGFACE_API_TOKEN"];
+            _historyRepository = historyRepository;
+            if (!string.IsNullOrEmpty(_bearerToken))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
+            }
         }
 
         public async Task<HuggingFaceResponseViewModel> AnalyzeTextAsync(HuggingFaceRequestViewModel request)
@@ -28,8 +39,7 @@ namespace Backend.Services
             if (inputText == null) inputText = string.Empty;
             if (guideline == null) guideline = string.Empty;
 
-            var token = Environment.GetEnvironmentVariable("HUGGINGFACE_API_TOKEN");
-            if (string.IsNullOrWhiteSpace(token))
+            if (string.IsNullOrWhiteSpace(_bearerToken))
             {
                 throw new InvalidOperationException("Hugging Face API token not found. Set the HUGGINGFACE_API_TOKEN environment variable.");
             }
@@ -45,7 +55,7 @@ namespace Backend.Services
 
             var json = System.Text.Json.JsonSerializer.Serialize(payload);
 
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
 
             using var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
@@ -74,6 +84,17 @@ namespace Backend.Services
                     topLabel = highestScoreElement.GetProperty("label").GetString() ?? "UNKNOWN";
                     topScore = highestScoreElement.GetProperty("score").GetDouble();
                 }
+
+                History history = new History
+                {
+                    Action = inputText,
+                    Guideline = guideline,
+                    Result = Enum.TryParse(topLabel.ToUpper(), out Result parsedResult) ? parsedResult : Result.UNCLEAR,
+                    Confidence = topScore,
+                    Timestamp = DateTime.UtcNow
+                };
+
+                await _historyRepository.Add(history);
 
                 return new HuggingFaceResponseViewModel
                 {
