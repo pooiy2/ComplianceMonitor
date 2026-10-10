@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Backend.ViewModels;
-using Microsoft.AspNetCore.Components.Forms;
+using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace Backend.Services
 {
@@ -12,6 +13,13 @@ namespace Backend.Services
     public class HuggingFaceService : IHuggingFaceService
     {
         private const string Endpoint = "https://router.huggingface.co/hf-inference/models/facebook/bart-large-mnli";
+
+        private readonly HttpClient _httpClient;
+
+        public HuggingFaceService(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
 
         public async Task<HuggingFaceResponseViewModel> AnalyzeTextAsync(HuggingFaceRequestViewModel request)
         {
@@ -37,12 +45,11 @@ namespace Backend.Services
 
             var json = System.Text.Json.JsonSerializer.Serialize(payload);
 
-            using var http = new System.Net.Http.HttpClient();
-            http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            using var content = new System.Net.Http.StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            using var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await http.PostAsync(Endpoint, content).ConfigureAwait(false);
+            var response = await _httpClient.PostAsync(Endpoint, content).ConfigureAwait(false);
 
             var responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 

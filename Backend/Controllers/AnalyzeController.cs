@@ -16,14 +16,13 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Analyze(HuggingFaceRequestViewModel request)
+        public async Task<IActionResult> PostAnalyze(HuggingFaceRequestViewModel request)
         {
             if (request == null || string.IsNullOrWhiteSpace(request.Input) || string.IsNullOrWhiteSpace(request.Guideline))
             {
                 return BadRequest("Invalid request. Please provide both 'Input' and 'Guideline'.");
             }
 
-            //Handoff to service layer to call hugging face
             return Ok(await _huggingFaceService.AnalyzeTextAsync(request));
         }
 
