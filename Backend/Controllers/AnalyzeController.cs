@@ -18,7 +18,7 @@ namespace Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> PostAnalyze(HuggingFaceRequestViewModel request)
         {
-            if (request == null || string.IsNullOrWhiteSpace(request.Input) || string.IsNullOrWhiteSpace(request.Guideline))
+            if (request == null || string.IsNullOrWhiteSpace(request.Action) || string.IsNullOrWhiteSpace(request.Guideline))
             {
                 return BadRequest("Invalid request. Please provide both 'Input' and 'Guideline'.");
             }

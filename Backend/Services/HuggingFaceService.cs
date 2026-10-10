@@ -23,7 +23,7 @@ namespace Backend.Services
 
         public async Task<HuggingFaceResponseViewModel> AnalyzeTextAsync(HuggingFaceRequestViewModel request)
         {
-            string? inputText = request?.Input;
+            string? inputText = request?.Action;
             string? guideline = request?.Guideline;
             if (inputText == null) inputText = string.Empty;
             if (guideline == null) guideline = string.Empty;
