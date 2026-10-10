@@ -74,7 +74,7 @@ function AnalyzePage() {
         </form>
 
         <aside className="analysis-aside">
-          <div className="aside-illustration"><span className="orbit orbit-one" /><span className="orbit orbit-two" /><span className="orbit-core">e</span><span className="orbit-star">✳</span></div>
+          <div className="aside-illustration"><span className="orbit orbit-one" /><span className="orbit orbit-two" /><span className="orbit-core">LK</span><span className="orbit-star">✳</span></div>
           <p className="eyebrow">HOW IT WORKS</p>
           <h2>Context makes the difference.</h2>
           <p>We compare an action with its guideline and returns a result with a confidence score to support your review.</p>
